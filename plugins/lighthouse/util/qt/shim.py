@@ -39,7 +39,8 @@ try:
     import binaryninjaui
     USING_NEW_BINJA = "qt_major_version" in binaryninjaui.__dict__ and binaryninjaui.qt_major_version == 6
     USING_OLD_BINJA = not(USING_NEW_BINJA)
-except ImportError:
+#binaryninjaui exception thrown, breaks ida
+except:
     USING_NEW_BINJA = False
     USING_OLD_BINJA = False
 
