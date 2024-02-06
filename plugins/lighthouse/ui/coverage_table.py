@@ -669,8 +669,12 @@ class CoverageTableController(object):
         {
             "filter": "HTML Files (*.html)",
             "caption": "Save HTML Report",
-            "directory": suggested_filepath
         }
+
+        if USING_PYQT5:
+            kwargs["directory"] = suggested_filepath
+        else:
+            kwargs["dir"] = suggested_filepath
 
         # prompt the user with the file dialog, and await their chosen filename(s)
         filename, _ = file_dialog.getSaveFileName(**kwargs)
@@ -896,7 +900,7 @@ class CoverageTableModel(QtCore.QAbstractTableModel):
 
         # unhandeled header request
         return None
-    
+
     def _data_function_display(self, function_address, column):
         """
         Return a string to diplay in the requested column of the given function.
@@ -1048,6 +1052,13 @@ class CoverageTableModel(QtCore.QAbstractTableModel):
             return
 
         #
+        # In PySide6 (eg. Binary Ninja) the Qt.SortOrder type does not convert
+        # to a simple integer (unlike PyQt5) so we reduce the type for comapt
+        #
+
+        direction = (sort_order == QtCore.Qt.SortOrder.DescendingOrder)
+
+        #
         # NOTE: attrgetter appears to profile ~8-12% faster than lambdas
         #   accessing the member on the member, hence the strange paradigm
         #
@@ -1057,7 +1068,7 @@ class CoverageTableModel(QtCore.QAbstractTableModel):
             sorted_functions = sorted(
                 itervalues(self._visible_metadata),
                 key=attrgetter(sort_field),
-                reverse=sort_order
+                reverse=direction
             )
 
         # sort the table entries by a function coverage attribute
@@ -1065,7 +1076,7 @@ class CoverageTableModel(QtCore.QAbstractTableModel):
             sorted_functions = sorted(
                 itervalues(self._visible_coverage),
                 key=attrgetter(sort_field),
-                reverse=sort_order
+                reverse=direction
             )
 
             #
@@ -1083,7 +1094,7 @@ class CoverageTableModel(QtCore.QAbstractTableModel):
             # items (0%) should be appended to the *end*
             #
 
-            if sort_order:
+            if direction:
                 sorted_functions += self._no_coverage
 
             #
