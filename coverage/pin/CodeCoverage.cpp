@@ -18,10 +18,10 @@
 // Pin comes with some old standard libraries.
 namespace pintool {
 template <typename V>
-using unordered_set = std::tr1::unordered_set<V>;
+using unordered_set = std::unordered_set<V>;
 
 template <typename K, typename V>
-using unordered_map = std::tr1::unordered_map<K, V>;
+using unordered_map = std::unordered_map<K, V>;
 }
 
 // Tool's arguments.
